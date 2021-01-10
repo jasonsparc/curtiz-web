@@ -1,4 +1,4 @@
-
+﻿
 // URL Query Hack
 document.addEventListener("DOMContentLoaded", function() {
 	let [inpUrl, inpUsername, inpToken] = document.querySelectorAll("form label+input")
@@ -75,4 +75,51 @@ document.addEventListener("DOMContentLoaded", function() {
 
 		el.custom_oldInnerHTML = el.innerHTML
 	}
+})
+
+// Prevent Rapid Submits -- since it can cause the "git push" to fail, which in
+// turn, will cause the page to reload.
+document.addEventListener("DOMContentLoaded", function() {
+	let confirmBeforeReload = false
+
+	;(new MutationObserver(function() {
+		let form = document.querySelectorAll('form')[1]
+		if (form && !form.custom_handledRapidSubmits) {
+			form.custom_handledRapidSubmits = true
+
+			let inpText = form.querySelector("input[type=text]")
+			let inpSubmit = form.querySelector("input[type=submit]")
+			if (!inpSubmit) return;
+
+			form.addEventListener('submit', function() {
+				if (inpText) inpText.readOnly = true
+				inpSubmit.disabled = true
+
+				let oldValue = inpSubmit.value
+				inpSubmit.value = "Loading…"
+
+				setTimeout(function() {
+					if (inpText) inpText.readOnly = false
+					inpSubmit.disabled = false
+					inpSubmit.value = oldValue
+				}, 2000)
+
+				confirmBeforeReload = true
+				setTimeout(function() {
+					confirmBeforeReload = false
+				}, 5000)
+			})
+		}
+	})).observe(document.body, {subtree: true, childList: true})
+
+	// Confirm before reload
+	// -- https://developer.mozilla.org/en-US/docs/Web/API/WindowEventHandlers/onbeforeunload
+	window.addEventListener('beforeunload', function (e) {
+		if (confirmBeforeReload) {
+			// Cancel the event
+			e.preventDefault()
+			// Chrome requires returnValue to be set
+			e.returnValue = ''
+		}
+	})
 })
