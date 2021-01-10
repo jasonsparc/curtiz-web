@@ -62,8 +62,8 @@ document.addEventListener("DOMContentLoaded", function() {
 		el.innerHTML = el.innerHTML.replaceAll(/\[((?:\\\]|[^\]])+)\]\(((?:\\\)|[^\s\)])+)\)/g, function(str, txt, href) {
 			let unesc = /\\(?![A-Za-z0-9 ])/g
 			let targetAttr = " target=_blank"
-			if (href == "#") {
-				// Quickly copy text on click via the syntax: `[TEXT TO COPY](#)`
+			if (href == "#!") {
+				// Quickly copy text on click via the syntax: `[TEXT TO COPY](#!)`
 				href = "javascript:navigator.clipboard.writeText(\""
 					+ JSON.stringify(txt).slice(1,-1) + "\")"
 				targetAttr = ""
