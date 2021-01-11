@@ -4,11 +4,11 @@ document.addEventListener("DOMContentLoaded", function() {
 	let [inpUrl, inpUsername, inpToken] = document.querySelectorAll("form label+input")
 	let {url: qUrl, username: qUsername, token: qToken} = getJsonFromUrl()
 
-	if (qUrl) hackReactInputValue(inpUrl, qUrl)
-	if (qUsername) hackReactInputValue(inpUsername, qUsername)
-	if (qToken) hackReactInputValue(inpToken, qToken)
+	hackReactInputValue(inpUrl, qUrl || "")
+	hackReactInputValue(inpUsername, qUsername || "")
+	hackReactInputValue(inpToken, qToken || "")
 
-	if (qUrl && qUsername && qToken) {
+	if (qUrl) {
 		setTimeout(function() {
 			document.querySelector("form input[type=submit]").click()
 		}, 300)
