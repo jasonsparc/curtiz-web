@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function() {
 	}
 })
 
-// Markdown Link Parser + Write Text to Clipboard
+// Markdown Link Parser + Escape Handler + Write Text to Clipboard
 document.addEventListener("DOMContentLoaded", function() {
 	(new MutationObserver(function() {
 		let h2 = document.querySelector("h2")
@@ -59,8 +59,14 @@ document.addEventListener("DOMContentLoaded", function() {
 			return; // Nothing changed here
 
 		// Parse Markdown-style links
-		el.innerHTML = el.innerHTML.replaceAll(/\[((?:\\\]|[^\]])+)\]\(((?:\\\)|[^\s\)])+)\)/g, function(str, txt, href) {
-			let unesc = /\\(?![A-Za-z0-9 ])/g
+		el.innerHTML = el.innerHTML.replaceAll(/\\([^A-Za-z0-9 ])|<(\w+:\/\/\S+)>|(https?:\/\/(?:(?!,\s)\S)+)|\[((?:\\\]|[^\]])+)\]\(((?:\\\)|[^\s\)])+)\)/g, function(str, unesc, httpb, http, txt, href) {
+			if (unesc) return unesc
+			if (httpb) http = httpb
+			if (http) txt = href = http
+
+			let esc = /\\(?![A-Za-z0-9 ])/g
+			txt = txt.replaceAll(esc, "")
+
 			let targetAttr = " target=_blank"
 			if (href == "#!") {
 				// Quickly copy text on click via the syntax: `[TEXT TO COPY](#!)`
@@ -68,8 +74,8 @@ document.addEventListener("DOMContentLoaded", function() {
 					+ JSON.stringify(txt).slice(1,-1) + "\")"
 				targetAttr = ""
 			}
-			txt = txt.replaceAll(unesc, "")
-			href = encodeURI(href.replaceAll(unesc, ""))
+
+			href = encodeURI(href.replaceAll(esc, ""))
 			return "<a href=\"" + href + "\"" + targetAttr + ">" + txt + "</a>"
 		})
 
