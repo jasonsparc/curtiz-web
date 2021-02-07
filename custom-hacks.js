@@ -9,9 +9,13 @@ document.addEventListener("DOMContentLoaded", function() {
 	hackReactInputValue(inpToken, qToken || "")
 
 	if (qUrl) {
-		setTimeout(function() {
-			document.querySelector("form input[type=submit]").click()
-		}, 300)
+		;(new MutationObserver(function(_, mo) {
+			let submit = document.querySelector("form input[type=submit]")
+			if (submit) {
+				submit.click()
+				mo.disconnect()
+			}
+		})).observe(document.body, {subtree: true, childList: true})
 	}
 
 	// From, https://stackoverflow.com/a/8486188
@@ -44,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // Markdown Link Parser + Escape Handler + Write Text to Clipboard
 document.addEventListener("DOMContentLoaded", function() {
-	(new MutationObserver(function() {
+	;(new MutationObserver(function() {
 		let h2 = document.querySelector("h2")
 		if (h2 && !h2.matches("[data-observed=true]")) {
 			parseMDStyleLinks(h2)
