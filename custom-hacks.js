@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function() {
 			return; // Nothing changed here
 
 		// Parse Markdown-style links
-		el.innerHTML = el.innerHTML.replaceAll(/\\([^A-Za-z0-9 ])|<(\w+:\/\/\S+)>|(https?:\/\/(?:(?![,:]\s)\S)+)|\[((?:\\\]|[^\]])+)\]\(((?:\\\)|[^\s\)])+)\)/g, function(str, unesc, httpb, http, txt, href) {
+		el.innerHTML = el.innerHTML.replaceAll(/\\([^A-Za-z0-9 ])|<(\w+:\/\/[^\s<>]+)>|(https?:\/\/(?:(?![?^.,;:]+\s)[^\s\\^<>])+)|\[((?:\\\]|[^\]])+)\]\(((?:\\\)|[^\s\)])+)\)/g, function(str, unesc, httpb, http, txt, href) {
 			if (unesc) return unesc
 			if (httpb) http = httpb
 			if (http) txt = href = http
